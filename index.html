@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUMUC AUDITOR - Bug Bounty PRO</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+body{background:#0a0a0a;color:#fff}
+.header{padding:20px;display:flex;justify-content:space-between;border-bottom:1px solid #222}
+.logo{font-weight:900;font-size:22px}.logo span{color:#00ff88}
+.hero{padding:40px 20px;text-align:center}
+.hero h1{font-size:36px}.hero h1 span{color:#00ff88}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:20px;max-width:1200px;margin:0 auto}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+.card{background:#151515;border:1px solid #222;border-radius:16px;padding:20px}
+label{display:block;font-size:11px;color:#888;margin:12px 0 4px;text-transform:uppercase}
+input,select,textarea{width:100%;background:#0a0a0a;border:1px solid #333;border-radius:8px;padding:10px;color:#fff}
+textarea{min-height:70px}
+.btn{width:100%;background:#00ff88;color:#000;border:0;padding:14px;border-radius:10px;font-weight:900;margin-top:16px}
+.price{background:linear-gradient(135deg,#00ff88,#00aaff);color:#000;padding:16px;border-radius:12px;margin-top:16px;font-size:13px}
+.preview{background:#fff;color:#000;border-radius:12px;padding:20px;font-size:11px;min-height:400px}
+</style>
+</head>
+<body>
+<div class="header"><div class="logo">AUMUC<span>_AUDITOR</span></div><div style="background:#00ff88;color:#000;padding:4px 10px;border-radius:20px;font-weight:700;font-size:11px">PRO BUG BOUNTY</div></div>
+<div class="hero"><h1>Audita software.<br><span>Cobra como PRO.</span></h1><p style="color:#888;margin-top:10px">Generador de reportes profesionales con impacto financiero y PoC</p></div>
+<div class="grid">
+<div class="card">
+<label>Programa auditado</label><input id="target" placeholder="api.ejemplo.com">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<div><label>Tipo de fallo</label><select id="vulnType"><option>SQL Injection</option><option>XSS</option><option>IDOR</option><option>SSRF</option><option>RCE</option><option>Auth Bypass</option><option>Information Disclosure</option><option>Broken Access</option></select></div>
+<div><label>Severidad</label><select id="severity"><option>CRITICAL</option><option>HIGH</option><option selected>MEDIUM</option><option>LOW</option></select></div>
+</div>
+<label>Endpoint vulnerable</label><input id="endpoint" placeholder="https://...">
+<label>Descripcion del fallo</label><textarea id="desc"></textarea>
+<label>Pasos para reproducir (PoC)</label><textarea id="poc" placeholder="1. Login... 2. Cambiar ID... 3. Ver datos..."></textarea>
+<label>Impacto si entra hacker</label><textarea id="impact"></textarea>
+<label>Costo si lo explotan</label><input id="cost" placeholder="$150,000 USD">
+<label>Fecha</label><input id="fecha" type="datetime-local">
+<button class="btn" onclick="generate()">GENERAR PDF PROFESIONAL Y COBRAR</button>
+<div class="price"><b>CUANTO COBRAR:</b><br>Critical: $2,500-$10,000 USD<br>High: $800-$2,500<br>Medium: $300-$800<br><b>Empresa sin programa: $15k-$50k MXN por reporte</b></div>
+</div>
+<div class="card"><div class="preview" id="preview">Vista previa...</div></div>
+</div>
+<script>
+document.getElementById('fecha').valueAsDate=new Date();
+function gen(){const t=target.value||'TARGET';const v=vulnType.value;const s=severity.value;const ep=endpoint.value;const d=desc.value;const p=poc.value;const im=impact.value;const c=cost.value;const fe=fecha.value;const folio='AUMUC-'+Date.now().toString().slice(-6);preview.innerHTML=`<b>AUMUC AUDITOR</b> | ${folio}<br><br><h2>${v} en ${t}</h2><b style="background:#000;color:#00ff88;padding:2px 6px;border-radius:10px">${s}</b> ${fe}<br><br><b>1. DESCRIPCION</b><br>${d}<br><br><b>2. ENDPOINT</b><br>${ep}<br><br><b>3. PoC</b><br><pre style="background:#eee;padding:8px;white-space:pre-wrap">${p}</pre><br><b>4. IMPACTO</b><br>${im}<br><br><b style="color:red">5. COSTO: ${c}</b>`;}
+document.querySelectorAll('input,textarea,select').forEach(e=>e.addEventListener('input',gen));
+function generate(){const {jsPDF}=window.jspdf;const doc=new jsPDF();const folio='AUMUC-'+Date.now().toString().slice(-6);doc.setFillColor(0,0,0);doc.rect(0,0,210,25,'F');doc.setTextColor(0,255,136);doc.setFontSize(14);doc.text('AUMUC_AUDITOR - '+folio,10,16);doc.setTextColor(0,0,0);doc.setFontSize(12);doc.text(document.getElementById('vulnType').value+' en '+document.getElementById('target').value,10,35);doc.setFontSize(9);let y=45;['Descripcion: '+desc.value,'Endpoint: '+endpoint.value,'PoC: '+poc.value,'Impacto: '+impact.value,'Costo: '+cost.value].forEach(t=>{const lines=doc.splitTextToSize(t,180);doc.text(lines,10,y);y+=lines.length*5+4});doc.save('REPORTE-'+folio+'.pdf');}
+gen();
+</script>
+</body>
+</html>
